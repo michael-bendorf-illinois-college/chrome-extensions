@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Michael Bendorf
+// SPDX-License-Identifier: MPL-2.0
+
 importScripts("config.js");
 
 const SHARE_CONTEXT_MENU_ID = "search-share";

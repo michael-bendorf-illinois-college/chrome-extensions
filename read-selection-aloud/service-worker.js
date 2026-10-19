@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Michael Bendorf
+// SPDX-License-Identifier: MPL-2.0
+
 const MENU_ID = "read-selection-aloud";
 const DEFAULT_SETTINGS = {
   voiceName: "",

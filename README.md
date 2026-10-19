@@ -4,7 +4,7 @@ A small collection of independent **Google Chrome Manifest V3 extensions** that 
 
 Each extension is self-contained, can be installed separately, and includes its own installation, configuration, privacy, and development documentation.
 
-> **Distribution:** These are public **source-code releases** for manual installation with Chrome's **Load unpacked** feature. They are **not Chrome Web Store listings**. No repository-level license file is present.
+> **Distribution:** These are public **source-code releases** for manual installation with Chrome's **Load unpacked** feature. They are **not Chrome Web Store listings**. The repository is licensed under [Mozilla Public License 2.0](LICENSE).
 
 ## Extensions at a glance
 
@@ -142,7 +142,11 @@ If reporting a problem, identify the extension and version, Chrome version, repr
 
 ## License, attribution, and status
 
-**No software license has been added yet.** Reuse terms have not been specified; please check with the repository owner before redistributing or incorporating this code into another project. See [GitHub's repository licensing guide](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/licensing-a-repository) for guidance on adding a license.
+**License:** The code and original bundled artwork in all three extensions are released under the [Mozilla Public License 2.0 (MPL-2.0)](LICENSE). **Copyright © 2026 Michael Bendorf.** Each extension folder also contains its own copy of `LICENSE`, so the terms remain available when an extension is distributed separately.
+
+MPL 2.0 is a **file-level copyleft** license: you may use, modify, distribute, and commercially incorporate the extensions. If you distribute modified MPL-covered files, you must make those covered files' source code available under MPL 2.0 and preserve required notices. You may keep separate files in a larger work under other terms, consistent with MPL 2.0. **Internal-only changes do not have to be published.** See the full license for authoritative terms.
+
+**Voluntary contribution request:** Even for internal-only improvements, please consider sharing useful fixes, accessibility enhancements, and new features via an issue or pull request. This is an invitation, not an additional license condition.
 
 These are independent convenience tools, not official products of Google Chrome, Slate, SHARE, or Illinois Heartland Library System. Product and organization names are used descriptively.
 

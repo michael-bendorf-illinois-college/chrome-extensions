@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Michael Bendorf
+// SPDX-License-Identifier: MPL-2.0
+
 // Shared between the service worker and the options page.
 // "carp" is the original Carlinville Public Library shortcut; it preserves
 // the destination for users who have not configured a different member library.

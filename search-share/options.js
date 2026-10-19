@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Michael Bendorf
+// SPDX-License-Identifier: MPL-2.0
+
 const subdomainInput = document.getElementById("subdomain");
 const destinationPreview = document.getElementById("destination-preview");
 const statusElement = document.getElementById("status");

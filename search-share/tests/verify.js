@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Michael Bendorf
+// SPDX-License-Identifier: MPL-2.0
+
 "use strict";
 
 // Run from this folder's parent with: node tests/verify.js

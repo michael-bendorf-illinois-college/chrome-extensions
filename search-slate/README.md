@@ -165,7 +165,7 @@ Static validation and simulated Chrome API tests were performed for hostname han
 
 ## License and distribution
 
-This source is published on GitHub for manual installation. No explicit software license has been selected for the repository, and the extension has not been submitted to the Chrome Web Store.
+This source is published under the [Mozilla Public License 2.0](LICENSE) (MPL-2.0), **Copyright © 2026 Michael Bendorf**, including original bundled icon artwork. Modified MPL-covered files distributed to others must remain available in source form under MPL 2.0; internal-only modifications need not be shared. Contributions are encouraged. The extension has not been submitted to the Chrome Web Store.
 
 ## References
 

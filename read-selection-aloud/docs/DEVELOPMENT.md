@@ -1,6 +1,6 @@
 # Development and testing
 
-Technical notes for **Read Selection Aloud v1.2.0**, a Chrome Manifest V3 extension. The original application source and icons in this release were preserved from the provided ZIP archive.
+Technical notes for **Read Selection Aloud v1.2.0**, a Chrome Manifest V3 extension. The original application logic and icons were preserved from the provided ZIP archive; source files later received copyright and MPL 2.0 notices without functional changes.
 
 ## Architecture
 

@@ -144,7 +144,11 @@ node tests/verify.js
 
 See [developer notes](docs/DEVELOPMENT.md) and the [manual testing checklist](docs/TESTING.md). Automated tests use mocked Chrome APIs; **live tests inside Chrome against the catalog have not been conducted** in this publication process.
 
-This public source release has not been submitted to the Chrome Web Store. No explicit software license has been selected; public access to the source alone does not grant general reuse rights.
+This public source release has not been submitted to the Chrome Web Store.
+
+## License
+
+The source and original bundled icon artwork are licensed under the [Mozilla Public License 2.0](LICENSE) (MPL-2.0), **Copyright © 2026 Michael Bendorf**. Distributed modifications to MPL-covered files must remain available as source under MPL 2.0; internal-only changes need not be published. Community contributions, including voluntarily shared internal improvements, are welcome. See the [repository license overview](../README.md#license-attribution-and-status).
 
 ## Official references
 

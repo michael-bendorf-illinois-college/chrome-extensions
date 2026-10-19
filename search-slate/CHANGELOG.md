@@ -1,5 +1,11 @@
 # Changelog
 
+## License adoption — 2026-10-19 (no extension version change)
+
+- Published source and original bundled icons under the Mozilla Public License 2.0 (MPL-2.0), Copyright © 2026 Michael Bendorf.
+- Added license/copyright notices and updated documentation; no extension behavior changes.
+
+
 ## 1.1.0 — Configurable hostname and toolbar icons (2026-10-19)
 
 - Added a settings page inspired by the Read Selection Aloud extension.

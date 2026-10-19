@@ -1,5 +1,11 @@
 # Changelog — Search SHARE
 
+## License adoption — 2026-10-19 (no extension version change)
+
+- Published source and original bundled icons under the Mozilla Public License 2.0 (MPL-2.0), Copyright © 2026 Michael Bendorf.
+- Added license/copyright notices and updated documentation; no extension behavior changes.
+
+
 ## 1.1.0 — 2026-10-19
 
 - Renamed extension, context-menu label, and repository folder to **Search SHARE**.

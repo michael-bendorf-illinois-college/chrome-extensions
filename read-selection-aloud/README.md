@@ -129,7 +129,7 @@ read-selection-aloud/
     └── DEVELOPMENT.md   Implementation notes and manual test checklist
 ```
 
-The five application source files and four icons match the supplied **Read Selection Aloud v1.2** archive; publishing this project did not change their implementation.
+The application behavior and four bundled icons match the supplied **Read Selection Aloud v1.2** archive; the only later source changes are license/copyright comments.
 
 ## Development and verification
 
@@ -143,7 +143,7 @@ The supplied v1.2.0 archive was checked for integrity, required manifest referen
 
 This source is publicly hosted on GitHub for visibility and manual installation. It has not been submitted to the Chrome Web Store.
 
-No license file has been selected for this project at the time of initial publication. Public visibility should not be interpreted as an explicit open-source license.
+The source code and original included icon artwork are released under the [Mozilla Public License 2.0](LICENSE) (MPL-2.0). **Copyright © 2026 Michael Bendorf.** When distributing modified covered files, make their source code available under MPL 2.0 and retain required notices. Internal-only modifications need not be shared, but contributions are warmly encouraged. See the [repository license overview](../README.md#license-attribution-and-status).
 
 ## Reference
 

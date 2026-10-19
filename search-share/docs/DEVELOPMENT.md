@@ -69,7 +69,7 @@ The current repository tree replaces `search-carpl/` with `search-share/`. Files
 
 Only selected text from an explicit user command is sent via a URL to the member catalog. URL encoding is not encryption: the target operator and browser history can record search phrases. The only saved preference is the shortcut label.
 
-This repository does not currently declare a software license. External SHARE pages and catalog systems are administered independently.
+This extension is licensed under [MPL 2.0](../LICENSE), Copyright © 2026 Michael Bendorf. External SHARE pages and catalog systems are administered independently.
 
 ## References
 
