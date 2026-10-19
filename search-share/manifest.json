@@ -1,15 +1,18 @@
 {
   "manifest_version": 3,
-  "name": "Search CarPL",
-  "version": "1.0",
-  "description": "Right-click selected text and search CarPL.",
+  "name": "Search SHARE",
+  "version": "1.1.0",
+  "description": "Search your SHARE member library catalog for highlighted text.",
   "permissions": [
-    "contextMenus"
+    "contextMenus",
+    "storage"
   ],
   "background": {
     "service_worker": "background.js"
   },
+  "options_page": "options.html",
   "action": {
+    "default_title": "Search SHARE settings",
     "default_icon": {
       "16": "icons/icon16.png",
       "32": "icons/icon32.png",
@@ -22,15 +25,5 @@
     "32": "icons/icon32.png",
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
-  },
-  "web_accessible_resources": [
-    {
-      "resources": [
-        "icons/*"
-      ],
-      "matches": [
-        "<all_urls>"
-      ]
-    }
-  ]
+  }
 }

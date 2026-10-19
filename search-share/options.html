@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Search SHARE settings</title>
+    <link rel="stylesheet" href="options.css">
+  </head>
+  <body>
+    <main class="settings-card">
+      <header>
+        <img src="icons/icon48.png" width="48" height="48" alt="">
+        <div>
+          <h1>Search SHARE</h1>
+          <p>Choose the SHARE member library whose catalog you want to search.</p>
+        </div>
+      </header>
+
+      <section aria-labelledby="share-heading">
+        <h2 id="share-heading">About SHARE</h2>
+        <p class="section-intro"><strong>SHARE</strong> stands for
+          <strong>Sharing Heartland's Available Resources Equally</strong>. It is
+          the Illinois Heartland Library System's shared library-catalog
+          consortium, connecting member libraries across central and southern
+          Illinois so patrons can discover and request materials.</p>
+        <p class="note">Learn more at the
+          <a href="https://share.illinoisheartland.org/about" target="_blank"
+             rel="noopener noreferrer">official SHARE website</a>.
+        </p>
+      </section>
+
+      <section aria-labelledby="library-heading">
+        <h2 id="library-heading">Member library shortcut</h2>
+        <form id="settings-form" novalidate>
+          <label for="subdomain">Library subdomain</label>
+          <div class="subdomain-row">
+            <input id="subdomain" type="text" required maxlength="63"
+                   autocomplete="off" autocapitalize="off" spellcheck="false"
+                   placeholder="carp" aria-describedby="subdomain-help">
+            <button id="reset-subdomain" type="button" class="secondary">Use default</button>
+          </div>
+          <p id="subdomain-help" class="note">
+            Enter just the part before <code>.illshareit.com</code>. For example,
+            for <code>carp.illshareit.com</code>, enter <code>carp</code>.
+            Use 1–63 letters, numbers, or hyphens; no spaces, dots, slashes,
+            or <code>https://</code>.
+          </p>
+          <p class="preview-label">Catalog destination</p>
+          <p id="destination-preview" class="destination-preview" aria-live="polite"></p>
+          <p class="note">Changing this setting affects future searches only.
+            The extension uses the same keyword-search format as the original.</p>
+          <div class="form-actions">
+            <button id="save" type="submit" class="primary">Save settings</button>
+            <span id="status" role="status" aria-live="polite"></span>
+          </div>
+        </form>
+      </section>
+
+      <section aria-labelledby="locator-heading">
+        <h2 id="locator-heading">Find your library's subdomain</h2>
+        <ol>
+          <li>Open the <a href="https://www.illshareit.com/" target="_blank"
+             rel="noopener noreferrer">SHARE Library Locator</a>.</li>
+          <li>Enter your town or address in <strong>Enter your home address</strong>
+              and choose a suggested location.</li>
+          <li>Use the <strong>within</strong> selector to choose a search radius
+              (6, 12, or 24 miles).</li>
+          <li>Find your member library in the results. Its listing displays a
+              shortcut address such as <code>carp.illshareit.com</code>.</li>
+          <li>Copy only the first part (<code>carp</code> in this example)
+              into the field above, then choose <strong>Save settings</strong>.</li>
+        </ol>
+        <p class="note">A town or city is usually enough to start the search;
+          you do not need to enter your full home address if you prefer not to.</p>
+        <p class="note">Only configure a shortcut shown for your member library
+          by SHARE. This extension sends the text you select to that catalog's
+          search URL when you choose <strong>Search SHARE</strong>.</p>
+      </section>
+    </main>
+    <script src="config.js"></script>
+    <script src="options.js"></script>
+  </body>
+</html>
