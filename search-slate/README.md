@@ -1,127 +1,175 @@
 # Search Slate (Slate Context Search)
 
-A small Google Chrome extension that lets you highlight text on a webpage, right-click, and choose **Search Slate** to open an Illinois College Slate CRM lookup in a new tab.
+A small Google Chrome extension that sends highlighted text to a Slate CRM lookup using the right-click **Search Slate** command. Version **1.1.0** adds a settings page for a configurable Slate **hostname** and a personal **toolbar icon pack** while retaining the original search path, lookup-base ID, and selected-text behavior.
 
-**Version:** 1.0 · **Extension format:** Manifest V3 · **Browser:** Google Chrome · **Dependencies:** None
+**Version:** 1.1.0 · **Extension format:** Manifest V3 · **Browser:** Google Chrome · **Dependencies:** None
 
-> **Institution-specific extension.** This version is configured for the **Illinois College Admission Slate environment**. Its search URL and lookup-base identifier are hardcoded in `background.js`. An authenticated Slate account with the necessary access is required to use the destination. This source release is not a Chrome Web Store listing.
+> This extension ships with the Illinois College Admission Slate hostname as its default. The lookup-base identifier remains fixed in code; changing the hostname alone will not make that lookup ID valid in another Slate institution. This is a source-code release, not a Chrome Web Store listing.
 
-## What it does
+## Features
 
-- Adds **Search Slate** to Chrome's right-click menu when text is highlighted.
-- Accepts text selected on a webpage, trims whitespace at its beginning and end, and URL-encodes it.
-- Inserts the encoded selection into a predefined Slate lookup URL.
-- Opens that URL in a **new browser tab**.
-- Uses no popup, preferences page, third-party package, content script, or API token.
+- Highlight a name, email address, or other appropriate text, right-click, and choose **Search Slate**.
+- Open a new browser tab with that phrase in the configured Slate lookup.
+- Enter a different hostname without editing JavaScript.
+- Load four personal PNG images as a toolbar icon pack, preview them, and restore the original icons.
+- Remember the hostname and icon pack locally in Chrome.
+- Click the extension's toolbar icon to open its settings page.
+- Preserve the original lookup's route, query parameters, and hash-fragment search state.
 
-**Example:** Highlight `Jane Smith`, right-click, and choose **Search Slate**. The extension opens a new tab with the term included in the search state of the configured Illinois College Slate lookup.
+No popup, content script, external library, or API credential is required.
 
-The extension submits the **selected phrase** as its search query; it does not collect data from the rest of the webpage, search every record on its own, or bypass Slate access permissions.
+## Installation
 
-## Install from GitHub
+1. Download or clone the [chrome-extensions repository](https://github.com/michael-bendorf-illinois-college/chrome-extensions).
+2. Extract the files to a permanent folder.
+3. Open `chrome://extensions` in Google Chrome.
+4. Turn on **Developer mode**.
+5. Select **Load unpacked** and choose the repository's **`search-slate`** folder—the directory containing `manifest.json`.
+6. Confirm **Slate Context Search** appears in Chrome's extensions list.
+7. Optionally pin the extension icon through the puzzle-piece Extensions menu for convenient access to settings.
 
-1. Open the [chrome-extensions repository](https://github.com/michael-bendorf-illinois-college/chrome-extensions).
-2. Select **Code → Download ZIP** and extract it to a permanent location on your computer (or clone the repository).
-3. Locate the **`search-slate`** subfolder. The folder you select must contain `manifest.json` directly.
-4. In Chrome, open `chrome://extensions`.
-5. Enable **Developer mode** in the upper-right corner.
-6. Select **Load unpacked** and choose the extracted `search-slate` folder.
-7. Confirm **Slate Context Search** appears among the installed extensions.
+Do not choose the entire repository or an unextracted ZIP archive. Chrome's [unpacked-extension instructions](https://developer.chrome.com/docs/extensions/get-started/tutorial/hello-world#load-unpacked) cover this process.
 
-**Do not choose** the whole repository folder or the still-compressed ZIP. Chrome needs the specific unpacked extension directory.
+### Upgrading from v1.0
 
-You can optionally pin its icon, but the main feature is accessed through the **right-click context menu** rather than the toolbar icon. Clicking the action icon does not open a settings page in this version.
+If you previously installed the unpacked v1.0 extension, update the files **in the same existing extension folder**, then select **Reload** in `chrome://extensions`. Keeping the installed folder avoids accidentally creating a second unpacked extension.
 
-Keep the extracted source folder in place; Chrome relies on it to load the unpacked extension.
+Existing search behavior remains intact. In the absence of a saved setting, v1.1.0 uses `admission.ic.edu` and the original bundled icons.
 
-See [Chrome's official unpacked-extension instructions](https://developer.chrome.com/docs/extensions/get-started/tutorial/hello-world#load-unpacked) if the extension does not load.
+## Search selected text
 
-## How to use
+1. Highlight some text on a normal webpage.
+2. Right-click the selection.
+3. Choose **Search Slate**.
+4. A new tab opens the configured Slate lookup with the highlighted phrase.
 
-1. Open a webpage with selectable text.
-2. Highlight a name, email address, identifier, or other phrase you want to look up **if appropriate for your Slate access and data-handling policies**.
-3. Right-click the selection.
-4. Select **Search Slate**.
-5. A new tab opens the configured Illinois College Slate lookup with the highlighted phrase as the query.
-6. Sign in to Slate if prompted; access to the destination is controlled by Slate.
+For example, highlighting `Jane Smith` produces a search query containing `Jane%20Smith`. Chrome may restrict extension menu actions on internal or protected pages.
 
-The menu item appears only in selection contexts. Some browser-internal or other restricted pages may not offer extension context-menu actions.
+Results depend on the lookup's configuration and the signed-in user's Slate permissions. Choose only a trusted hostname because the browser directs your selected search text to the configured destination. This extension never bypasses Slate authentication.
 
-### Search target
+## Open the settings page
 
-The destination is defined by the `URL_TEMPLATE` constant in `background.js`. The currently configured template:
+- Click the pinned extension toolbar icon, **or**
+- Open `chrome://extensions` → **Slate Context Search** → **Details** → **Extension options**.
 
-- Uses the `https://admission.ic.edu` Slate host.
-- Opens a specific `/manage/lookup/search` route.
-- Includes a fixed lookup-base identifier.
-- Encodes the search text in the URL's hash-fragment search state.
-- Requests the initial search page with the saved template's sort and filter state.
+The page is visually patterned after the Read Selection Aloud settings page and contains two sections: **Slate destination** and **Toolbar icon pack**.
 
-**This is not a generic Slate-wide search.** Results depend on that lookup's configuration and the signed-in user's Slate permissions. If the lookup base, route, or Slate search-state format changes, the extension may need an update.
+### 1. Slate destination: hostname
 
-## Permissions and data handling
+Enter a hostname such as:
 
-The manifest requests only the **`contextMenus`** permission to register the **Search Slate** item. It invokes `chrome.tabs.create` to open a tab; Chrome does not require the additional `tabs` permission for that operation.
+```text
+admission.ic.edu
+```
 
-The manifest also declares its four icon files as `web_accessible_resources` for `<all_urls>`. This makes the **icons** available as extension resources to webpages; it does **not** grant the extension permission to inspect those webpages. The existing declaration is preserved from the original source and could be reviewed for minimization in a future release.
+You can also use a different hostname, such as `slate.example.edu`, if that host exposes the **same lookup path and lookup-base ID**.
 
-### Privacy considerations
+Input rules:
 
-- The extension accesses the selected text at the time you choose **Search Slate**.
-- It encodes that phrase into the destination URL; **URL encoding is not encryption**.
-- The phrase may appear in the new tab's address bar and browser history. Be thoughtful about searching sensitive personal data, particularly on shared computers or while screen sharing.
-- Chrome navigates to the configured Illinois College Slate destination. How the query is subsequently processed is governed by that Slate application and your institution's policies.
-- The supplied extension code has **no analytics, tracking, external dependencies, account credentials, direct HTTP client calls, persistent query log, or local storage**.
-- It does not use content scripts or request host permissions.
+- Enter **only** the hostname—no `https://`, slash, path, port, or query string.
+- Letters, digits, hyphens, and dots are accepted; surrounding whitespace is trimmed and capital letters are normalized to lowercase.
+- Searches always use **HTTPS**.
+- Select **Use original** to put `admission.ic.edu` back in the field.
+- Select **Save settings** to apply the change. Reset buttons stage a change; they do not save it automatically.
 
-This is a convenience tool for authorized users, **not** a way to access records without Slate authentication or authorization.
+**Unchanged from v1.0:** The search still uses `/manage/lookup/search` with the fixed lookup-base GUID, `joinable=1`, and the same encoded search-state fragment. To adapt to another institution's different lookup base, the source would still need modification.
+
+### 2. Toolbar icon pack
+
+You may use the four original bundled PNGs or supply four of your own.
+
+| Required image | Dimensions | Format |
+| --- | --- | --- |
+| Small icon | 16×16 pixels | PNG |
+| Standard/high-density icon | 32×32 pixels | PNG |
+| Medium icon | 48×48 pixels | PNG |
+| Large icon | 128×128 pixels | PNG |
+
+**All four files are required.** Each must be a valid square PNG and **256 KB or smaller**. Transparent backgrounds are recommended.
+
+1. Prepare four separate PNG images at the exact dimensions above.
+2. In settings, choose **Select four PNG files** and select all four at once. **Do not upload a ZIP.**
+3. The extension checks file signatures, image dimensions, decodability, duplicates, and the per-file size limit.
+4. Check the four image previews.
+5. Select **Save settings** to activate your personal toolbar icons.
+6. To revert, choose **Restore original icons** and then **Save settings**.
+
+Filenames do not need to match any particular pattern; the settings page identifies images by their actual dimensions. The pack stays in `chrome.storage.local` on that Chrome installation and is **not uploaded to a server**.
+
+**Important Chrome limitation:** Custom images replace the **toolbar action icon**, including its icon in the Extensions menu. The installed extension's identity icon in Chrome's extension-management/installation surfaces remains defined by the packaged `manifest.json`. The right-click menu item continues to read **Search Slate**. Chrome's runtime icon API does not replace the packaged identity icons.
+
+See the [complete icon-pack preparation guide](docs/ICON-PACK.md) for design and export recommendations.
+
+## Privacy and permissions
+
+The manifest requests:
+
+| Permission | Purpose |
+| --- | --- |
+| `contextMenus` | Add **Search Slate** to the menu when text is selected. |
+| `storage` | Keep the hostname and optional custom PNG icon pack on this Chrome installation. |
+
+The extension also calls `chrome.tabs.create` to open the lookup; this does **not** require an extra `tabs` permission. It requests no `host_permissions` and injects no scripts into webpages.
+
+The existing `web_accessible_resources` declaration exposes the four **bundled icon files** to webpages matching `<all_urls>`; that declaration does not grant the extension broad page-reading privileges. It is retained for compatibility with the previous release.
+
+**Selected text:** When you explicitly invoke **Search Slate**, the extension receives that selection, trims and URL-encodes it, then opens the Slate destination. The query appears in the new tab's URL fragment and may be visible in the address bar or browser history. URL encoding is **not encryption**. The Slate application controls how the query is subsequently processed.
+
+**Saved preferences:** Only `slateHostname` and `iconPack` are stored locally. The supplied code has no analytics, query-history database, external JavaScript dependencies, direct HTTP client calls, or credential management. Chrome normally clears this local extension storage when the extension is removed.
 
 ## Troubleshooting
 
-| Symptom | What to check |
+| Symptom | Suggested action |
 | --- | --- |
-| **Search Slate** is missing | Select text first; verify **Slate Context Search** is enabled in `chrome://extensions`; reload it; try a normal webpage rather than a restricted Chrome page. |
-| Chrome cannot load it | Choose the folder that directly contains `manifest.json`. Extract ZIPs before using **Load unpacked**. |
-| A new tab opens but Slate asks for login | Sign in with your authorized Illinois College Slate account; the extension does not provide authentication. |
-| A new tab opens but the lookup is unavailable | Check your Slate access, the hardcoded host and lookup base, and whether Slate has changed its lookup URL format. |
-| The search query looks wrong | Confirm you selected the intended text. `background.js` uses `trim()` and `encodeURIComponent()`. Check browser Developer Tools for errors. |
-| No new tab opens | Check the extension's **Errors** button or service-worker console in `chrome://extensions`. |
-| It worked before but stopped after moving files | Restore the unpacked source to its original folder or reload it from the new location. |
+| **Search Slate** is absent | Highlight text, enable the extension, and try a regular webpage. Reload in `chrome://extensions` if needed. |
+| Chrome cannot load the extension | Select the directory containing `manifest.json`; extract the ZIP first. |
+| Slate asks for sign-in | Authenticate using your authorized Slate account. |
+| Hostname is rejected | Enter a hostname like `admission.ic.edu` without a scheme, path, port, or spaces. |
+| A different hostname opens the wrong lookup | The base GUID is still the original one; the alternate host may not contain that lookup. |
+| Icon pack is rejected | Select four **PNG** files together at exactly 16/32/48/128 square pixels, each no larger than 256 KB. |
+| Toolbar icon did not change | Click **Save settings**, inspect errors, and reload the extension. Only the toolbar icon is user-configurable. |
+| Pack works until Chrome restarts | The worker attempts to reapply it on startup; check its Errors panel if that fails. |
+| Settings page shows an error | Open Developer Tools on the settings page; the background service worker may also show an error. |
+| Want original settings | Choose **Use original** for the hostname and/or **Restore original icons**, then save. |
 
-## Project structure
+## Source layout
 
 ```text
 search-slate/
-├── manifest.json          Manifest V3 identity, permissions, icons
-├── background.js          Context-menu creation and Slate navigation
+├── manifest.json            v1.1.0 permissions and options-page registration
+├── background.js            Search, hostname lookup, icon restoration
+├── options.html             Configuration interface
+├── options.css              Responsive settings-page design
+├── options.js               Validation, PNG previews, local persistence
 ├── icons/
 │   ├── icon16.png
 │   ├── icon32.png
 │   ├── icon48.png
 │   └── icon128.png
-├── README.md              Installation, operation, privacy, troubleshooting
-├── CHANGELOG.md           Initial public source-release record
+├── README.md
+├── CHANGELOG.md
 └── docs/
-    └── DEVELOPMENT.md    Architecture, customization, and test checklist
+    ├── DEVELOPMENT.md      Architecture and testing
+    └── ICON-PACK.md        PNG dimensions and preparation guide
 ```
 
-The application files and icons above match the supplied `search_slate.zip` snapshot, whose inner folder was named `search_slate`. In this repository, the parent directory is named `search-slate` for consistent project naming. **No source-code or icon changes were made for publication.**
+The four original packaged icons are unchanged. The manifest version, service worker, settings UI, and documentation have been updated for v1.1.0.
 
-## Customization and development
+## Development and verification
 
-This project has no build process or package-manager dependencies. To change the destination for another Slate environment, review and update `URL_TEMPLATE` in `background.js`, including the host, lookup base, and search-state structure required by that environment. Reload the unpacked extension in `chrome://extensions` after editing the service worker.
+This is a dependency-free extension. Edit source directly and use **Reload** from `chrome://extensions` after changing the manifest or background service worker.
 
-See [Development and testing](docs/DEVELOPMENT.md) for detailed behavior, safe customization steps, and a manual test checklist.
+See [Development and testing](docs/DEVELOPMENT.md) for implementation details and the manual browser acceptance checklist.
 
-Static ZIP integrity, manifest, JavaScript syntax, and icon checks were completed for this release. **Interactive testing inside an authenticated Slate session was not performed as part of GitHub publication**.
+Static validation and simulated Chrome API tests were performed for hostname handling, v1.0 URL parity, icon pack processing, settings save/reset, and rollback. **A live authenticated Chrome/Slate installation was not exercised as part of publication.**
 
-## Distribution and license
+## License and distribution
 
-This source is published on GitHub for visibility and manual installation. It has not been submitted to the Chrome Web Store. No explicit software license has been added at the time of initial publication; public source visibility alone does not establish an open-source license.
+This source is published on GitHub for manual installation. No explicit software license has been selected for the repository, and the extension has not been submitted to the Chrome Web Store.
 
 ## References
 
 - [Chrome: Load an unpacked extension](https://developer.chrome.com/docs/extensions/get-started/tutorial/hello-world#load-unpacked)
+- [Chrome: Action/toolbar icons](https://developer.chrome.com/docs/extensions/reference/api/action)
+- [Chrome: Storage API](https://developer.chrome.com/docs/extensions/reference/api/storage)
 - [Chrome: Context menus API](https://developer.chrome.com/docs/extensions/reference/api/contextMenus)
-- [Chrome: Tabs API](https://developer.chrome.com/docs/extensions/reference/api/tabs)
-- [Chrome: Web-accessible resources](https://developer.chrome.com/docs/extensions/reference/manifest/web-accessible-resources)

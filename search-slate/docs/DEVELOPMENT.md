@@ -1,146 +1,185 @@
 # Development and testing
 
-Implementation notes for **Slate Context Search v1.0** / **Search Slate**, the Illinois College-specific Chrome extension.
+Technical guide for **Slate Context Search v1.1.0** (right-click command: **Search Slate**).
 
-## How it works
+## What's new in v1.1.0
 
-The extension uses a single Manifest V3 background service worker, `background.js`.
+Version 1.1.0 preserves the version 1.0 lookup URL path, lookup-base ID, and selected-text search-state structure. It adds:
 
-### Registration
+- A user-editable **hostname**, stored in Chrome local extension storage.
+- An options page opened by clicking the toolbar action icon.
+- Four-file PNG upload, validation, and preview for a **toolbar** icon pack.
+- Toolbar icon restoration on extension installation/update and Chrome profile startup.
+- Reset controls and rollback if a custom icon cannot be applied.
+- Documentation explaining why user images cannot replace the packaged extension identity icon.
 
-When Chrome installs or updates the extension, the `chrome.runtime.onInstalled` listener registers a context-menu item with:
+The original `icons/icon*.png` files are unchanged.
 
-- ID: `search-slate`
-- Label: **Search Slate**
-- Context: `selection`
+## Architecture and event flow
 
-The item is intended to appear when the user has selected text. There is no persistent background page, popup interface, options page, or content script.
+### Background service worker: `background.js`
 
-### Search event
+- On `chrome.runtime.onInstalled`, removes stale context-menu entries, creates the **Search Slate** selection menu, and reapplies saved toolbar icons.
+- On `chrome.runtime.onStartup`, reapplies the saved toolbar icon pack.
+- On `chrome.action.onClicked`, opens the options page.
+- On `chrome.contextMenus.onClicked`, reads the saved hostname (or defaults to `admission.ic.edu`), builds the same Slate lookup as v1.0 with the selected text, and opens a new tab.
+- On `chrome.runtime.onMessage` with `type: "apply-icon-pack"`, loads the saved icon pack and calls `chrome.action.setIcon`. Returns an explicit success/error response to the options page.
 
-When Chrome dispatches `chrome.contextMenus.onClicked`:
+### Options page: `options.html`, `options.css`, `options.js`
 
-1. Check that `info.menuItemId` equals `search-slate` and that `info.selectionText` is present.
-2. Remove leading/trailing whitespace using `trim()`.
-3. Convert the query to URL-safe form with `encodeURIComponent()`.
-4. Replace the first `X` placeholder in the hardcoded `URL_TEMPLATE`.
-5. Call `chrome.tabs.create({ url: targetUrl })` to navigate in a new tab.
+- Loads saved `slateHostname` and `iconPack` values from `chrome.storage.local`.
+- Validates and normalizes hostnames before saving.
+- Accepts exactly four PNG files and matches each by its actual 16/32/48/128 square-pixel dimensions.
+- Previews pending icons without applying them until **Save settings**.
+- Saves preferences locally, asks the service worker to apply icons, and rolls back the stored preferences if icon application fails.
+- Offers staged **Use original** and **Restore original icons** actions.
 
-The current template routes to the Illinois College Admission Slate host's `/manage/lookup/search` endpoint with a fixed `base` query parameter and encoded JSON-like search state in the URL fragment.
+### Storage data
 
-**Do not treat `encodeURIComponent()` as a privacy mechanism.** It protects URL syntax, not the confidentiality of selected names or identifiers.
+| Key | Type | Default | Purpose |
+| --- | --- | --- | --- |
+| `slateHostname` | string | `"admission.ic.edu"` | Hostname used with HTTPS for new searches |
+| `iconPack` | object or null | `null` | Four PNG data URLs indexed by `16`, `32`, `48`, `128`; null means bundled icons |
 
-## Institution-specific configuration
+Storage is local to the Chrome installation and is not automatically synchronized to another computer. It contains no search terms or browser activity history.
 
-`URL_TEMPLATE` in `background.js` is the only search destination configured in this version. It includes the institution host, route, lookup-base GUID, and serialized search-state pattern. The literal `X` represents the highlighted phrase before replacement.
+## Hostname and URL construction
 
-To adapt this extension:
+Input is lowercased and trimmed; validation permits DNS-style ASCII labels separated by dots, including hyphens inside labels. It rejects schemes (`https://`), ports, paths, queries, fragments, whitespace, and invalid empty labels.
 
-1. Obtain a working, authorized Slate lookup URL for the intended environment.
-2. Confirm the correct host and lookup base.
-3. Identify the exact location where that version of Slate expects its search term.
-4. Update `URL_TEMPLATE` while preserving the search-state format; retain the intended placeholder.
-5. Reload the extension via `chrome://extensions`.
-6. Test names, multiple words, punctuation, and any required login/authorization behavior.
+`buildSearchUrl` creates a URL from the original v1.0 template, replaces the `hostname` component, and replaces the `X` search marker in its encoded Slate hash state with `encodeURIComponent(selectionText.trim())`.
 
-Avoid adding credentials, API tokens, or private student information to source code or example URLs. Do not assume the current base GUID or URL structure works in another institution's Slate instance.
+**The original query structure remains fixed:**
 
-### Compatibility caveats
+- Route: `/manage/lookup/search`
+- Query: `joinable=1` and original fixed `base` GUID
+- Hash: encoded Slate search state containing the selected query, page, sort, and filter values
 
-- A Slate search-route or hash-state change may break this integration.
-- The configured lookup base may become unavailable or be replaced.
-- Search results still depend on normal Slate authentication, lookup permissions, and data availability.
-- The code does not use user-configurable settings, site-specific routing, or multiple lookups.
-- Replacing the first literal `X` is intentionally simple; changing the template to include more than one placeholder would require revisiting the implementation.
-- If the user's selection contains only whitespace, `selectionText` may be truthy before trimming and the extension may open a lookup with an empty query.
+If the stored hostname is corrupt or invalid, the service worker logs a warning and uses the original `admission.ic.edu` to avoid an unintended destination. An alternative institution's Slate host may not provide the original lookup-base ID; v1.1.0 deliberately does not expose that ID as a user setting.
 
-## Manifest and API details
+## Icon pack pipeline
 
-| Item | Value / role |
+The picker accepts **four individual PNG files**, not a ZIP. Validation on the options page checks:
+
+1. Exactly four files were chosen.
+2. Each file is between 24 bytes and 256 KB.
+3. The PNG magic number is present.
+4. Width and height in the PNG header are equal and are one of 16, 32, 48, or 128.
+5. The browser can decode the image, and decoded dimensions match the header.
+6. There is exactly one file for each required size.
+
+After passing checks, `FileReader` converts each PNG to a `data:image/png;base64,...` value. The pack is saved in `chrome.storage.local`, not sent to a remote service.
+
+In the Manifest V3 service worker, `applySavedIconPack`:
+
+1. Retrieves the saved pack.
+2. Decodes and revalidates the PNG bytes and dimensions.
+3. Creates `ImageData` using `createImageBitmap` and `OffscreenCanvas` for each size.
+4. Calls `chrome.action.setIcon({ imageData })` with the four-image dictionary.
+5. Restores the original file paths using `chrome.action.setIcon({ path })` when no custom pack is saved.
+
+Chrome's Action API supports a dictionary of icon sizes and OffscreenCanvas-generated image data in service workers. This sets the **toolbar action image**. Packaged `manifest.icons` cannot be replaced at runtime; they remain the extension's installed identity artwork.
+
+### Why four sizes?
+
+The four resolutions correspond to the bundled extension artwork and provide useful raster sources at different display scales. Chrome chooses the most suitable available image for toolbar display density. The 48 and 128 pixel sources are included to provide a complete conventional icon pack, even though the toolbar is normally displayed near 16 device-independent pixels.
+
+The 256 KB per-file limit keeps a complete four-file pack well inside Chrome's standard local storage quota and limits accidental uploads of enormous images.
+
+## Manifest and permissions
+
+| Feature | Manifest/API |
 | --- | --- |
-| `manifest_version` | `3` |
-| `name` | `Slate Context Search` |
-| `version` | `1.0` |
-| Background | `background.js` as extension service worker |
-| Permission | `contextMenus` only |
-| Tab navigation | `chrome.tabs.create`; no `tabs` permission needed for creating a new tab |
-| Icons | 16, 32, 48, and 128 pixel PNGs |
-| `web_accessible_resources` | Only the four icon paths, exposed for `<all_urls>` |
+| Manifest V3 | `manifest_version: 3` |
+| Release | `version: "1.1.0"` |
+| Context-menu item | `contextMenus` |
+| Local hostname/icon storage | `storage` |
+| Background | `background.js` |
+| Settings UI | `options_page: "options.html"` |
+| Toolbar action | `action.default_title` and `action.default_icon` |
+| Bundled identity artwork | `icons` |
+| Existing web-accessible resources | Original four packaged PNGs exposed for `<all_urls>` |
 
-The `web_accessible_resources` declaration is broader than this simple background-only operation obviously needs. It does not supply host permissions, but websites may request those declared icon assets as web-accessible resources. Consider removing or narrowing it in a future tested version if nothing external consumes those resources. The published v1.0 source is **unchanged**.
+The extension does not request `tabs` or host permissions and does not inject scripts into web pages. It navigates to the configured Slate URL using `chrome.tabs.create`.
 
-## Source map
+The original web-accessible icon declaration is retained to avoid unrelated changes in this release. It could be minimized after testing if not needed.
 
-| Path | Responsibility |
+## Source files
+
+| Path | Purpose |
 | --- | --- |
-| `manifest.json` | Declares MV3, extension metadata, permission, service worker, and icons |
-| `background.js` | Creates context menu, encodes selection, opens lookup tab |
-| `icons/icon16.png` | 16×16 extension icon |
-| `icons/icon32.png` | 32×32 extension icon |
-| `icons/icon48.png` | 48×48 extension icon |
-| `icons/icon128.png` | 128×128 extension icon |
+| `manifest.json` | v1.1.0 metadata, permissions, options registration |
+| `background.js` | Selection search, hostname validation, custom icon restoration |
+| `options.html` | Hostname field, PNG picker, instructions, previews, controls |
+| `options.css` | Responsive, keyboard-focusable settings page styles |
+| `options.js` | File validation, preview, save/reset, storage rollback |
+| `icons/icon*.png` | Original unmodified 16/32/48/128 PNG artwork |
+| `README.md` | User guide and privacy/installation details |
+| `docs/ICON-PACK.md` | Icon image preparation guide |
+| `CHANGELOG.md` | Release history |
 
-## Local development
+## Running and testing
 
-1. Download or clone this repository.
-2. In Chrome, open `chrome://extensions` and enable **Developer mode**.
-3. Choose **Load unpacked** and point it at `search-slate`.
-4. Edit `background.js` or `manifest.json` with a text editor.
-5. Select **Reload** on the extension card.
-6. Open the service worker's inspect link or extension **Errors** panel to diagnose runtime issues.
+No build step or external packages are required.
 
-### Basic syntax check
+1. Download/clone the repository.
+2. Visit `chrome://extensions` and enable **Developer mode**.
+3. Load `search-slate` as an unpacked extension.
+4. Modify source and select **Reload** after changing the worker or manifest.
+5. Inspect errors from the extension card, its service worker, or the options-page Developer Tools.
 
-If Node.js is installed:
+For static parsing with Node.js:
 
 ```bash
 node --check background.js
+node --check options.js
 ```
 
-This checks JavaScript parsing only; it does not simulate Chrome APIs or authenticate with Slate.
+### Automated checks performed for v1.1.0
 
-## Manual acceptance checklist
+The source was syntax-checked and tested using simulated Chrome APIs:
 
-- [ ] Chrome loads the extension without manifest errors and displays version **1.0**.
-- [ ] The context menu shows **Search Slate** when normal webpage text is highlighted.
-- [ ] A simple name (e.g. `Jane Smith`) opens a new tab to the configured Slate lookup.
-- [ ] Leading/trailing spaces in the selection do not become part of the search phrase.
-- [ ] Multiple words and special characters (e.g. `Smith & Jones`) are correctly URL-encoded.
-- [ ] An authorized, signed-in Slate user sees the expected lookup.
-- [ ] An unauthenticated user is still subject to the normal Slate sign-in flow.
-- [ ] The extension does not open an unrelated URL when another context-menu item is clicked.
-- [ ] The extension works after Chrome restart and extension reload.
-- [ ] The icon displays correctly in Chrome's extension UI.
-- [ ] The intended lookup base remains valid and no sensitive data is exposed in screenshots or shared URLs.
+- Original v1.0 search URL parity across plain text and reserved characters.
+- Custom hostname normalization, rejection of invalid hosts, and default fallback.
+- Context menu registration and toolbar click behavior.
+- Custom PNG pack processing into `ImageData` and reset to packaged paths.
+- Options-page load/save, four-file validation, duplicate-size rejection, and previews.
+- Reset, validation failure, and rollback when applying icons fails.
 
-## Publication validation record
+**These are code-level simulations, not a live browser end-to-end test.** They do not verify authenticated Slate availability or platform-specific PNG rendering.
 
-Checks performed on the supplied `search_slate.zip` before GitHub publication:
+### Manual browser acceptance checklist
 
-| Check | Result |
-| --- | --- |
-| ZIP integrity (`unzip -t`) | Passed |
-| Manifest V3 and referenced file paths | Valid / present |
-| Background JavaScript syntax (`node --check`) | Passed |
-| Icon dimensions | 16×16, 32×32, 48×48, 128×128 |
-| Source review | No embedded credentials, storage, analytics, or direct network requests |
-| Institutional destination | Hardcoded Illinois College Admission Slate host and lookup-base identifier |
-| Live Chrome/Slate functional test | **Not performed** |
+- [ ] Upgrading an existing unpacked v1.0 install to v1.1.0 preserves the normal search with no saved settings.
+- [ ] The right-click **Search Slate** item appears only when text is selected.
+- [ ] Default hostname search produces the same URL/results as v1.0.
+- [ ] Clicking the toolbar icon opens the configuration page.
+- [ ] Entering a valid new hostname, saving, and searching uses that host and HTTPS.
+- [ ] Trying a scheme, path, port, whitespace, or malformed hostname shows a validation error and does not save.
+- [ ] **Use original** restores `admission.ic.edu` after saving.
+- [ ] Selecting four correctly sized PNG files shows previews before saving.
+- [ ] The toolbar icon updates after saving a custom pack.
+- [ ] Missing, duplicate-sized, oversized, wrong-format, or corrupt images are rejected.
+- [ ] **Restore original icons** followed by Save returns to bundled artwork.
+- [ ] Saved hostname and toolbar icon work after closing/reopening settings, reloading the extension, and restarting Chrome.
+- [ ] The Chrome Extensions management listing retains the original packaged identity icon.
+- [ ] Error messages are visible if the background worker cannot apply the icon.
+- [ ] A user with proper Slate access sees the intended lookup at the configured hostname.
+- [ ] Selected text and test screenshots do not disclose sensitive applicant data.
 
-## Future improvements to consider
+## Known limits and future work
 
-The following would change behavior or packaging and were **not** part of this faithful source publication:
-
-- Make the Slate URL template configurable through an options page.
-- Support multiple lookup bases or environments.
-- Remove or minimize unnecessary web-accessible icon declarations.
-- Add tests for URL construction and edge cases.
-- Add error handling for tab creation failures or unavailable Slate lookup destinations.
-- Optionally incorporate keyboard shortcuts or additional query actions.
+- The fixed lookup-base GUID is not configurable in v1.1.0.
+- The icon picker expects **four separate PNG files**, not a ZIP archive.
+- Changing the toolbar icon cannot rewrite `manifest.icons` or make a custom icon appear everywhere Chrome shows the extension's identity.
+- No Chrome Web Store packaging, automatic updater, or CI pipeline is included.
+- If a future Chrome version changes service-worker image decoding behavior, icon restoration may require adjustment.
+- Invalid hostname values placed directly in storage are ignored in favor of the default host.
+- Further improvements might include multi-institution lookup configuration or an export/import settings facility.
 
 ## Official references
 
-- [Context menus](https://developer.chrome.com/docs/extensions/reference/api/contextMenus)
-- [Tabs API](https://developer.chrome.com/docs/extensions/reference/api/tabs)
-- [Manifest V3 service workers](https://developer.chrome.com/docs/extensions/develop/concepts/service-workers)
-- [Web-accessible resources](https://developer.chrome.com/docs/extensions/reference/manifest/web-accessible-resources)
+- [Chrome Action API](https://developer.chrome.com/docs/extensions/reference/api/action)
+- [Chrome Storage API](https://developer.chrome.com/docs/extensions/reference/api/storage)
+- [Chrome service workers](https://developer.chrome.com/docs/extensions/develop/concepts/service-workers)
+- [Chrome context menus](https://developer.chrome.com/docs/extensions/reference/api/contextMenus)

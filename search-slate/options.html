@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Search Slate settings</title>
+    <link rel="stylesheet" href="options.css">
+  </head>
+  <body>
+    <main class="settings-card">
+      <header>
+        <img src="icons/icon48.png" width="48" height="48" alt="">
+        <div>
+          <h1>Search Slate</h1>
+          <p>Choose your Slate hostname and toolbar icon.</p>
+        </div>
+      </header>
+
+      <section aria-labelledby="destination-heading">
+        <h2 id="destination-heading">Slate destination</h2>
+        <label for="hostname">Hostname</label>
+        <div class="hostname-row">
+          <input id="hostname" type="text" required autocomplete="off" spellcheck="false"
+                 placeholder="admission.ic.edu" aria-describedby="hostname-help">
+          <button id="reset-hostname" type="button" class="secondary">Use original</button>
+        </div>
+        <p id="hostname-help" class="note">Enter only the hostname, such as <code>admission.ic.edu</code>. Do not include <code>https://</code>, a port, a path, or a query string. Searches always use HTTPS.</p>
+        <p class="note">The original Slate lookup path and lookup-base ID are preserved; this setting changes only the hostname.</p>
+        <p class="note"><strong>Use a trusted Slate hostname.</strong> Your selected search text will be directed to the site you configure.</p>
+      </section>
+
+      <section aria-labelledby="icons-heading">
+        <h2 id="icons-heading">Toolbar icon pack</h2>
+        <p class="section-intro">Choose four separate <strong>PNG</strong> images at once—exactly <strong>16×16</strong>, <strong>32×32</strong>, <strong>48×48</strong>, and <strong>128×128</strong> pixels. Each must be square and no larger than <strong>256 KB</strong>. Transparent backgrounds are recommended.</p>
+        <label for="icon-files">Select four PNG files (not a ZIP)</label>
+        <input id="icon-files" type="file" accept=".png,image/png" multiple aria-describedby="icon-help">
+        <p id="icon-help" class="note">Filenames can vary; images are matched by their pixel dimensions. All four sizes are required. Icons stay on this Chrome installation.</p>
+
+        <div class="icon-previews" aria-label="Icon preview">
+          <div class="icon-preview"><img id="icon-16" src="icons/icon16.png" width="48" height="48" alt="16 pixel icon preview"><span>16×16</span></div>
+          <div class="icon-preview"><img id="icon-32" src="icons/icon32.png" width="48" height="48" alt="32 pixel icon preview"><span>32×32</span></div>
+          <div class="icon-preview"><img id="icon-48" src="icons/icon48.png" width="48" height="48" alt="48 pixel icon preview"><span>48×48</span></div>
+          <div class="icon-preview"><img id="icon-128" src="icons/icon128.png" width="48" height="48" alt="128 pixel icon preview"><span>128×128</span></div>
+        </div>
+        <p id="pack-state" class="note" aria-live="polite">Using original icons.</p>
+        <button id="restore-icons" type="button" class="secondary">Restore original icons</button>
+        <p class="note">A custom pack changes the Chrome <strong>toolbar action icon</strong>. Chrome still uses the bundled manifest icons in extension-management and installation surfaces. The right-click menu label remains “Search Slate.”</p>
+        <p class="note">See the <a href="https://github.com/michael-bendorf-illinois-college/chrome-extensions/blob/main/search-slate/docs/ICON-PACK.md" target="_blank" rel="noopener noreferrer">icon pack guide</a> for examples and preparation tips.</p>
+      </section>
+
+      <footer>
+        <button id="save" type="button" class="primary">Save settings</button>
+        <span id="status" role="status" aria-live="polite"></span>
+      </footer>
+    </main>
+    <script src="options.js"></script>
+  </body>
+</html>
