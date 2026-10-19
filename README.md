@@ -140,6 +140,10 @@ The tree above highlights entry points and documentation; extension folders also
 
 If reporting a problem, identify the extension and version, Chrome version, reproduction steps, and relevant errors from `chrome://extensions`. Please redact any sensitive text, URLs, or account details from reports.
 
+## Development note
+
+The three extensions in this repository were developed with assistance from OpenAI's ChatGPT, including support for code development and documentation. Michael Bendorf is responsible for the projects' content, release decisions, and ongoing maintenance.
+
 ## License, attribution, and status
 
 **License:** The code and original bundled artwork in all three extensions are released under the [Mozilla Public License 2.0 (MPL-2.0)](LICENSE). **Copyright © 2026 Michael Bendorf.** Each extension folder also contains its own copy of `LICENSE`, so the terms remain available when an extension is distributed separately.

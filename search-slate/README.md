@@ -163,6 +163,10 @@ See [Development and testing](docs/DEVELOPMENT.md) for implementation details an
 
 Static validation and simulated Chrome API tests were performed for hostname handling, v1.0 URL parity, icon pack processing, settings save/reset, and rollback. **A live authenticated Chrome/Slate installation was not exercised as part of publication.**
 
+## Development note
+
+This project was developed with assistance from OpenAI's ChatGPT, including support for code development and documentation. Michael Bendorf is responsible for the project's content, release decisions, and ongoing maintenance.
+
 ## License and distribution
 
 This source is published under the [Mozilla Public License 2.0](LICENSE) (MPL-2.0), **Copyright © 2026 Michael Bendorf**, including original bundled icon artwork. Modified MPL-covered files distributed to others must remain available in source form under MPL 2.0; internal-only modifications need not be shared. Contributions are encouraged. The extension has not been submitted to the Chrome Web Store.

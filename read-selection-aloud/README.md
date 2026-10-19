@@ -139,6 +139,10 @@ See [Development and testing](docs/DEVELOPMENT.md) for the event flow, configura
 
 The supplied v1.2.0 archive was checked for integrity, required manifest references, icon dimensions, and JavaScript syntax. **It has not been tested interactively inside a live Chrome browser in this publication workflow**; please perform the manual checks after installing.
 
+## Development note
+
+This project was developed with assistance from OpenAI's ChatGPT, including support for code development and documentation. Michael Bendorf is responsible for the project's content, release decisions, and ongoing maintenance.
+
 ## Distribution and license
 
 This source is publicly hosted on GitHub for visibility and manual installation. It has not been submitted to the Chrome Web Store.

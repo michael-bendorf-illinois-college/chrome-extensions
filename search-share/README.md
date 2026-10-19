@@ -146,6 +146,10 @@ See [developer notes](docs/DEVELOPMENT.md) and the [manual testing checklist](do
 
 This public source release has not been submitted to the Chrome Web Store.
 
+## Development note
+
+This project was developed with assistance from OpenAI's ChatGPT, including support for code development and documentation. Michael Bendorf is responsible for the project's content, release decisions, and ongoing maintenance.
+
 ## License
 
 The source and original bundled icon artwork are licensed under the [Mozilla Public License 2.0](LICENSE) (MPL-2.0), **Copyright © 2026 Michael Bendorf**. Distributed modifications to MPL-covered files must remain available as source under MPL 2.0; internal-only changes need not be published. Community contributions, including voluntarily shared internal improvements, are welcome. See the [repository license overview](../README.md#license-attribution-and-status).
