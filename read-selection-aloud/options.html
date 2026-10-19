@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Read Selection Aloud settings</title>
+    <link rel="stylesheet" href="options.css">
+  </head>
+  <body>
+    <main class="settings-card">
+      <header>
+        <img src="icons/icon-48.png" width="48" height="48" alt="">
+        <div>
+          <h1>Read Selection Aloud</h1>
+          <p>Choose how selected text should sound.</p>
+        </div>
+      </header>
+
+      <section aria-labelledby="voice-heading">
+        <h2 id="voice-heading">Voice</h2>
+        <label for="voice">Preferred voice</label>
+        <div class="voice-row">
+          <select id="voice"></select>
+          <button id="preview" type="button" class="secondary">Preview</button>
+        </div>
+        <p id="voice-note" class="note"></p>
+      </section>
+
+      <section aria-labelledby="sound-heading">
+        <h2 id="sound-heading">Sound</h2>
+
+        <div class="slider-row">
+          <label for="rate">Speed</label>
+          <input id="rate" type="range" min="0.5" max="2" step="0.1" value="1">
+          <output id="rate-value" for="rate">1.0×</output>
+        </div>
+
+        <div class="slider-row">
+          <label for="pitch">Pitch</label>
+          <input id="pitch" type="range" min="0" max="2" step="0.1" value="1">
+          <output id="pitch-value" for="pitch">1.0</output>
+        </div>
+
+        <div class="slider-row">
+          <label for="volume">Volume</label>
+          <input id="volume" type="range" min="0" max="1" step="0.05" value="1">
+          <output id="volume-value" for="volume">100%</output>
+        </div>
+      </section>
+
+      <footer>
+        <button id="save" type="button" class="primary">Save settings</button>
+        <span id="status" role="status" aria-live="polite"></span>
+      </footer>
+    </main>
+
+    <script src="options.js"></script>
+  </body>
+</html>
